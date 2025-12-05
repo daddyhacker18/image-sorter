@@ -39,6 +39,18 @@ def parse_ratio(ratio_str):
         print(f"Error: Invalid ratio format '{ratio_str}'. Use 'W:H' (e.g., 16:9) or a float.")
         sys.exit(1)
 
+def get_resolution_category(w, h):
+    # Determine category based on the smaller dimension (e.g., height for landscape)
+    # This handles both landscape and portrait orientations reasonably well.
+    short_side = min(w, h)
+    
+    if short_side >= 4320: return "8K_UHD"
+    if short_side >= 2160: return "4K_UHD"
+    if short_side >= 1440: return "QHD_2K"
+    if short_side >= 1080: return "FHD_1080p"
+    if short_side >= 720:  return "HD_720p"
+    return "Standard_Res"
+
 def main():
     parser = argparse.ArgumentParser(description="Sort images based on resolution and aspect ratio.")
     parser.add_argument('--width', type=int, default=DEFAULT_TARGET_W, help=f'Minimum Width (default: {DEFAULT_TARGET_W})')
@@ -102,11 +114,9 @@ def main():
                         break
                 
                 if is_high_res and is_valid_ratio:
-                    # Sort into subfolder based on Ratio first, then Resolution?
-                    # Or just Resolution? User asked to sort based on input.
-                    # Let's group by Aspect Ratio -> Resolution
-                    
-                    subfolder = os.path.join(dest_root, f"Ratio_{matched_ratio_str}", f"{w}x{h}")
+                    # Sort into subfolder based on Ratio -> Resolution Category
+                    cat = get_resolution_category(w, h)
+                    subfolder = os.path.join(dest_root, f"Ratio_{matched_ratio_str}", cat)
                     
                     if not args.dry_run:
                         if not os.path.exists(subfolder):

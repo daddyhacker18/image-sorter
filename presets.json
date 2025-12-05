@@ -1,0 +1,20 @@
+{
+  "framework16": {
+    "description": "Framework 16 - 2560x1600 16:10",
+    "width": 2560,
+    "height": 1600,
+    "ratios": ["16:10"]
+  },
+  "framework13": {
+    "description": "Framework 13 2.8k - 2880x1920 3:2",
+    "width": 2880,
+    "height": 1920,
+    "ratios": ["3:2"]
+  },
+  "g9": {
+    "description": "Samsung G9 - 5120x1440 32:9",
+    "width": 5120,
+    "height": 1440,
+    "ratios": ["32:9"]
+  }
+}

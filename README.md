@@ -10,6 +10,7 @@ The `sort_images.py` script scans a specified directory (and its subdirectories)
 
 *   **Custom Resolution Filtering:** Specify minimum width and height for images.
 *   **Multiple Aspect Ratio Matching:** Define one or more target aspect ratios (e.g., `16:9`, `32:9`, `3:2`).
+*   **Presets:** Easily load pre-configured settings for common devices (e.g., `framework16`, `g9`) via the `--preset` argument.
 *   **Recursive Scanning:** Processes images across all subdirectories.
 *   **Organized Output:** Creates a structured output directory with subfolders organized first by aspect ratio, and then by broad resolution categories (e.g., "FullHD", "4K", "Ultrawide").
 *   **Copy or Move:** Choose to either copy files (default) or move them.
@@ -30,6 +31,16 @@ Make sure you have `python3` installed. The script uses standard libraries and `
 ## Usage
 
 Run the script from your terminal using `python3 sort_images.py` followed by the desired arguments.
+
+### Using Presets
+
+Load settings for a specific device using the `--preset` argument. This overrides default width, height, and ratios.
+
+```bash
+python3 sort_images.py --preset framework16
+```
+
+You can combine presets with other arguments to override specific settings. Available presets are defined in `presets.json` (e.g., `framework13`, `framework16`, `g9`).
 
 ### Basic Sorting Example (Copying by Default)
 
@@ -65,6 +76,7 @@ python3 sort_images.py --width 1920 --height 1080 --ratios 16:9 --dry-run
 
 ### Full List of Arguments
 
+*   `--preset STR`: Load settings from a preset configuration (e.g., `framework16`, `g9`). Overrides defaults.
 *   `--width INT`: Minimum width in pixels (default: `2560`).
 *   `--height INT`: Minimum height in pixels (default: `1440`).
 *   `--ratios [RATIO ...]`: One or more target aspect ratios. Use `W:H` format (e.g., `16:9`, `32:9`) or a float (e.g., `1.77`). Default: `['16:9']`.

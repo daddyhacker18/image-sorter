@@ -4,6 +4,7 @@ import re
 import shutil
 import argparse
 import sys
+import json
 
 # Default Configurations (can be overridden by args)
 DEFAULT_TARGET_W = 2560
@@ -53,9 +54,10 @@ def get_resolution_category(w, h):
 
 def main():
     parser = argparse.ArgumentParser(description="Sort images based on resolution and aspect ratio.")
-    parser.add_argument('--width', type=int, default=DEFAULT_TARGET_W, help=f'Minimum Width (default: {DEFAULT_TARGET_W})')
-    parser.add_argument('--height', type=int, default=DEFAULT_TARGET_H, help=f'Minimum Height (default: {DEFAULT_TARGET_H})')
-    parser.add_argument('--ratios', nargs='+', default=['16:9'], help='Target aspect ratios (e.g., "16:9 32:9 3:2"). Default: 16:9')
+    parser.add_argument('--preset', type=str, help='Load settings from a preset (e.g., framework16, g9). Overrides defaults, overridden by specific args.')
+    parser.add_argument('--width', type=int, default=None, help=f'Minimum Width (default: {DEFAULT_TARGET_W})')
+    parser.add_argument('--height', type=int, default=None, help=f'Minimum Height (default: {DEFAULT_TARGET_H})')
+    parser.add_argument('--ratios', nargs='+', default=None, help='Target aspect ratios (e.g., "16:9 32:9 3:2"). Default: 16:9')
     parser.add_argument('--source', default='.', help='Source directory to scan (recursive). Default: current dir')
     parser.add_argument('--dest', default='Sorted_Images', help='Destination directory for sorted images. Default: Sorted_Images')
     parser.add_argument('--move', action='store_true', help='Move files instead of copying them (copy is default).')
@@ -63,9 +65,46 @@ def main():
 
     args = parser.parse_args()
 
-    target_w = args.width
-    target_h = args.height
-    target_ratios = [parse_ratio(r) for r in args.ratios]
+    # 1. Start with Global Defaults
+    target_w = DEFAULT_TARGET_W
+    target_h = DEFAULT_TARGET_H
+    target_ratios_raw = ['16:9']
+
+    # 2. Apply Preset if provided
+    if args.preset:
+        preset_key = args.preset.lower()
+        presets_file = os.path.join(os.path.dirname(__file__), 'presets.json')
+        
+        if not os.path.exists(presets_file):
+            print(f"Error: Presets file '{presets_file}' not found.")
+            sys.exit(1)
+            
+        try:
+            with open(presets_file, 'r') as f:
+                presets = json.load(f)
+            
+            if preset_key in presets:
+                p = presets[preset_key]
+                target_w = p.get('width', target_w)
+                target_h = p.get('height', target_h)
+                target_ratios_raw = p.get('ratios', target_ratios_raw)
+                print(f"Loaded preset '{preset_key}': {p.get('description', '')}")
+            else:
+                print(f"Error: Preset '{preset_key}' not found. Available presets: {', '.join(presets.keys())}")
+                sys.exit(1)
+        except json.JSONDecodeError:
+            print(f"Error: Failed to parse '{presets_file}'.")
+            sys.exit(1)
+
+    # 3. Override with explicit arguments
+    if args.width is not None:
+        target_w = args.width
+    if args.height is not None:
+        target_h = args.height
+    if args.ratios is not None:
+        target_ratios_raw = args.ratios
+
+    target_ratios = [parse_ratio(r) for r in target_ratios_raw]
     
     dest_root = args.dest
     if not args.dry_run and not os.path.exists(dest_root):
@@ -73,7 +112,7 @@ def main():
 
     print(f"Scanning '{args.source}'...")
     print(f"Criteria: Resolution >= {target_w}x{target_h}")
-    print(f"Target Ratios: {args.ratios} (Tolerance: +/- {RATIO_TOLERANCE})")
+    print(f"Target Ratios: {target_ratios_raw} (Tolerance: +/- {RATIO_TOLERANCE})")
     print(f"Action: {'Moving' if args.move else 'Copying'} to '{dest_root}'\n")
 
     count_moved = 0

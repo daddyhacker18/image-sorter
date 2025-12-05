@@ -11,7 +11,7 @@ The `sort_images.py` script scans a specified directory (and its subdirectories)
 *   **Custom Resolution Filtering:** Specify minimum width and height for images.
 *   **Multiple Aspect Ratio Matching:** Define one or more target aspect ratios (e.g., `16:9`, `32:9`, `3:2`).
 *   **Recursive Scanning:** Processes images across all subdirectories.
-*   **Organized Output:** Creates a structured output directory with subfolders for each matched aspect ratio and resolution.
+*   **Organized Output:** Creates a structured output directory with subfolders organized first by aspect ratio, and then by broad resolution categories (e.g., "FullHD", "4K", "Ultrawide").
 *   **Copy or Move:** Choose to either copy files (default) or move them.
 *   **Dry Run Mode:** Simulate the sorting process without making any changes to your files.
 *   **Thumbnail Exclusion:** Automatically skips files with "thumbnail" in their name.
@@ -96,12 +96,20 @@ If you run `python3 sort_images.py --width 5120 --height 1440 --ratios 32:9 --de
 ```
 My_Wallpapers/
 ├── Ratio_32x9/
-│   ├── 5120x1440/
+│   ├── UltraHD/ # Example: images with resolutions like 5120x1440, 7680x2160
 │   │   ├── wallpaper1.jpg
 │   │   └── wallpaper2.png
-│   ├── 7680x2160/
+│   ├── 5K_and_above/ # Example: images with resolutions above UltraHD
 │   │   ├── another_wallpaper.jpeg
 │   │   └── awesome_image.png
+│   └── ...
+├── Ratio_16x9/
+│   ├── FullHD/ # Example: images with resolutions like 1920x1080
+│   │   ├── wallpaper_hd.jpg
+│   │   └── another_hd.png
+│   ├── 4K/ # Example: images with resolutions like 3840x2160
+│   │   ├── wallpaper_4k.jpeg
+│   │   └── image_4k.png
 │   └── ...
 └── ...
 ```

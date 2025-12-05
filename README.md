@@ -28,6 +28,21 @@ cd wallpaper-sorter
 
 Make sure you have `python3` installed. The script uses standard libraries and `file` command (which should be available on most Linux distributions).
 
+### System-wide Installation
+
+You can install the tool to your system (user-level) so it can be run from any directory.
+
+1.  Run the installation script:
+    ```bash
+    ./install.sh
+    ```
+2.  Ensure `~/.local/bin` is in your `PATH`.
+3.  You can now run `image-sorter` from anywhere:
+    ```bash
+    image-sorter --help
+    ```
+
+
 ## Usage
 
 Run the script from your terminal using `python3 sort_images.py` followed by the desired arguments.

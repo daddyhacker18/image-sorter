@@ -22,12 +22,17 @@ def get_resolution(filepath):
         parts = output.split(':', 1)
         content = parts[1] if len(parts) > 1 else output 
         matches = re.findall(r'(\d+)\s*x\s*(\d+)', content, re.IGNORECASE)
+        best_res = None
+        max_area = 0
         for w_str, h_str in matches:
             w = int(w_str)
             h = int(h_str)
             if w > 0 and h > 0:
-                return w, h
-        return None
+                area = w * h
+                if area > max_area:
+                    max_area = area
+                    best_res = (w, h)
+        return best_res
     except Exception:
         return None
 
@@ -74,7 +79,9 @@ def main():
     # 2. Apply Preset if provided
     if args.preset:
         preset_key = args.preset.lower()
-        presets_file = os.path.join(os.path.dirname(__file__), 'presets.json')
+        # Resolve the directory of the actual script file, resolving symlinks
+        script_dir = os.path.dirname(os.path.realpath(__file__))
+        presets_file = os.path.join(script_dir, 'presets.json')
         
         if not os.path.exists(presets_file):
             print(f"Error: Presets file '{presets_file}' not found.")
@@ -150,7 +157,7 @@ def main():
                 for i, target_r in enumerate(target_ratios):
                     if abs(img_ratio - target_r) < RATIO_TOLERANCE:
                         is_valid_ratio = True
-                        matched_ratio_str = args.ratios[i].replace(':', 'x') # e.g. 16x9 for folder name
+                        matched_ratio_str = target_ratios_raw[i].replace(':', 'x') # e.g. 16x9 for folder name
                         break
                 
                 if is_high_res and is_valid_ratio:
